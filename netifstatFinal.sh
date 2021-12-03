@@ -445,7 +445,7 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 				cntrlArrayRate=0
 				while [ $cntrlArrayRate -lt $NINTERFACES ]; do
 				    	ti=${arrayTXB1[$cntrlArrayRate]}
-					tf=${arrayTXB2[$cntrlArrayRate]}
+						tf=${arrayTXB2[$cntrlArrayRate]}
 				    	ri=${arrayRXB1[$cntrlArrayRate]}
 				    	rf=${arrayRXB2[$cntrlArrayRate]}
 
@@ -454,11 +454,11 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
     					var11=$(($var1/$time))
     					var22=$(($var2/$time))
     					arrayTXFB+=($var1)
-					arrayRXFB+=($var2)
-					arrayTRATEB+=($var11)
+						arrayRXFB+=($var2)
+						arrayTRATEB+=($var11)
     					arrayRRATEB+=($var22)
 
-					cntrlArrayRate=$[$cntrlArrayRate+1]
+						cntrlArrayRate=$[$cntrlArrayRate+1]
 				done
 
 				cntrlL=0
