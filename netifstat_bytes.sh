@@ -32,7 +32,7 @@ p="-p"
 
 re='^[0-9]+$';
 declare -a arrayTXTOT=( $(for i in {1..100}; do echo 0; done) )
-declare -a arrayRXTOT=( $(for i in {1..100}; do echo 0; done) ./)
+declare -a arrayRXTOT=( $(for i in {1..100}; do echo 0; done) )
 declare -a arrayTX
 declare -a arrayRX
 declare -a arrayTRATE

@@ -398,17 +398,21 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			
 			fmt="%-12s%-12s%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE TXTOT RXTOT
+
 			while true; do
 				cntrlL=0
 				declare -a arrayTXB1=()
 				declare -a arrayRXB1=()
-				declare -a  arrayTXB2=()
+				declare -a arrayTXB2=()
 				declare -a arrayRXB2=()
 				declare -a arrayTXFB=()
 				declare -a arrayRXFB=()
-				declare -a arrayTRATE=()
-				declare -a arrayRRATE=()
+				declare -a arrayTRATEB=()
+				declare -a arrayRRATEB=()
+				
 				cntrlArray1=0
+				NRRX=2
+				NRTX=3
 				while [ $cntrlArray1 -lt $NINTERFACES ]; do
 					arrayName=($(netstat -i | awk '{if(NR<='$NINTERFACES+2' && NR>=3) print $1}')) 
 
@@ -440,11 +444,10 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 
 				cntrlArrayRate=0
 				while [ $cntrlArrayRate -lt $NINTERFACES ]; do
-				    tf=${arrayTXB2[$cntrlArrayRate]}
-				    rf=${arrayRXB2[$cntrlArrayRate]}
-
 				    ti=${arrayTXB1[$cntrlArrayRate]}
+					tf=${arrayTXB2[$cntrlArrayRate]}
 				    ri=${arrayRXB1[$cntrlArrayRate]}
+				    rf=${arrayRXB2[$cntrlArrayRate]}
 
 				    var1=$((tf-ti))
     				var2=$((rf-ri))
@@ -461,23 +464,8 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 				cntrlL=0
 				
 				while [ $cntrlL -lt $NINTERFACES ]; do
-					
-					if [ $cntrlL -eq 0 ];then
-						varX=${arrayTXFB[$cntrlL]}
-						varY=${arrayRXFB[$cntrlL]}
-						arrayTXTOT[$cntrlL]=`expr $varX`
-						arrayRXTOT[$cntrlL]=`expr $varY`
-					else
-						cntrlLT=$((cntrlL-um))
-						varX=${arrayTXFB[$cntrlL]}
-						varXX=${arrayTXTOT[$cntrlLT]}
-						varTT=$((varXX+varX))
-						varY=${arrayRXFB[$cntrlL]}
-						varYY=${arrayRXTOT[$cntrlLT]}
-						varTR=$((varYY+varY))
-						arrayTXTOT[$cntrlL]=`expr $varTT`
-						arrayRXTOT[$cntrlL]=`expr $varTR`
-					fi
+					arrayTXTOT[$cntrlL]=`expr ${arrayTXTOT[$cntrlL]} + ${arrayTXFB[$cntrlL]}`
+					arrayRXTOT[$cntrlL]=`expr ${arrayRXTOT[$cntrlL]} + ${arrayRXFB[$cntrlL]}`
 					printf "$fmt" "${arrayName[$cntrlL]}" "${arrayTXFB[$cntrlL]}" "${arrayRXFB[$cntrlL]}" "${arrayTRATEB[$cntrlL]}" "${arrayRRATEB[$cntrlL]}" "${arrayTXTOT[$cntrlL]}" "${arrayRXTOT[$cntrlL]}"
 					cntrlL=$[$cntrlL+1]
 				done
