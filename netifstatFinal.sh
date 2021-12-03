@@ -21,6 +21,7 @@ getRules(){
 kb=1000 #binary
 mb=1000000
 um=1
+zero=0
 cntrl=0
 cntrlC=0
 numRegex=0
@@ -31,7 +32,7 @@ p="-p"
 
 re='^[0-9]+$';
 declare -a arrayTXTOT=( $(for i in {1..100}; do echo 0; done) )
-declare -a arrayRXTOT=( $(for i in {1..100}; do echo 0; done) ./)
+declare -a arrayRXTOT=( $(for i in {1..100}; do echo 0; done) )
 declare -a arrayTX
 declare -a arrayRX
 declare -a arrayTRATE
@@ -399,11 +400,85 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			printf "$fmt" NETIF TX RX TRATE RRATE TXTOT RXTOT
 			while true; do
 				cntrlL=0
+				declare -a arrayTXB1=()
+				declare -a arrayRXB1=()
+				declare -a  arrayTXB2=()
+				declare -a arrayRXB2=()
+				declare -a arrayTXFB=()
+				declare -a arrayRXFB=()
+				declare -a arrayTRATE=()
+				declare -a arrayRRATE=()
+				cntrlArray1=0
+				while [ $cntrlArray1 -lt $NINTERFACES ]; do
+					arrayName=($(netstat -i | awk '{if(NR<='$NINTERFACES+2' && NR>=3) print $1}')) 
 
+					arrayTXB1+=($(netstat -ie | sed '/inet/d' | sed '/ether/d' | sed '/RX error/d' | sed '/TX errors/d' | sed '/device/d' | sed '/loop/d' | sed '1d' | cut -f1 -d":" | sed 's/^ *//g' | awk '{if( NR=='$NRTX' ) print $5}'))
+
+					arrayRXB1+=($(netstat -ie | sed '/inet/d' | sed '/ether/d' | sed '/RX error/d' | sed '/TX errors/d' | sed '/device/d' | sed '/loop/d' | sed '1d' | cut -f1 -d":" | sed 's/^ *//g' | awk '{if( NR=='$NRRX' ) print $5}'))  
+
+					cntrlArray1=$[$cntrlArray1+1]
+					NRRX=$[$NRRX+4]
+					NRTX=$[$NRTX+4]
+
+				done
+				sleep $time
+				NRRX=2
+				NRTX=3
+				cntrlArray2=0
+				while [ $cntrlArray2 -lt $NINTERFACES ]; do
+					arrayName=($(netstat -i | awk '{if(NR<='$NINTERFACES+2' && NR>=3) print $1}')) 
+
+					arrayTXB2+=($(netstat -ie | sed '/inet/d' | sed '/ether/d' | sed '/RX error/d' | sed '/TX errors/d' | sed '/device/d' | sed '/loop/d' | sed '1d' | cut -f1 -d":" | sed 's/^ *//g' | awk '{if( NR=='$NRTX' ) print $5}'))
+
+					arrayRXB2+=($(netstat -ie | sed '/inet/d' | sed '/ether/d' | sed '/RX error/d' | sed '/TX errors/d' | sed '/device/d' | sed '/loop/d' | sed '1d' | cut -f1 -d":" | sed 's/^ *//g' | awk '{if( NR=='$NRRX' ) print $5}'))  
+
+					cntrlArray2=$[$cntrlArray2+1]
+					NRRX=$[$NRRX+4]
+					NRTX=$[$NRTX+4]
+
+				done
+
+				cntrlArrayRate=0
+				while [ $cntrlArrayRate -lt $NINTERFACES ]; do
+				    tf=${arrayTXB2[$cntrlArrayRate]}
+				    rf=${arrayRXB2[$cntrlArrayRate]}
+
+				    ti=${arrayTXB1[$cntrlArrayRate]}
+				    ri=${arrayRXB1[$cntrlArrayRate]}
+
+				    var1=$((tf-ti))
+    				var2=$((rf-ri))
+    				var11=$(($var1/$time))
+    				var22=$(($var2/$time))
+    				arrayTXFB+=($var1)
+					arrayRXFB+=($var2)
+					arrayTRATEB+=($var11)
+    				arrayRRATEB+=($var22)
+
+					cntrlArrayRate=$[$cntrlArrayRate+1]
+				done
+
+				cntrlL=0
+				
 				while [ $cntrlL -lt $NINTERFACES ]; do
-					arrayTXTOT[$cntrlL]=`expr ${arrayTXTOT[$cntrlL]} + ${arrayTXFB[$cntrlL]}`
-					arrayRXTOT[$cntrlL]=`expr ${arrayRXTOT[$cntrlL]} + ${arrayRXFB[$cntrlL]}`
-					printf "$fmt" "${arrayName[$cntrlL]}" "${arrayTXFB[$cntrlL]}" "${arrayRXFB[$cntrlL]}" "${arrayTRATEB[$cntrlL]}" "${arrayRRATEB[$cntrlL]}" "${arrayTXTOT[$cntrl]}" "${arrayRXTOT[$cntrl]}"
+					
+					if [ $cntrlL -eq 0 ];then
+						varX=${arrayTXFB[$cntrlL]}
+						varY=${arrayRXFB[$cntrlL]}
+						arrayTXTOT[$cntrlL]=`expr $varX`
+						arrayRXTOT[$cntrlL]=`expr $varY`
+					else
+						cntrlLT=$((cntrlL-um))
+						varX=${arrayTXFB[$cntrlL]}
+						varXX=${arrayTXTOT[$cntrlLT]}
+						varTT=$((varXX+varX))
+						varY=${arrayRXFB[$cntrlL]}
+						varYY=${arrayRXTOT[$cntrlLT]}
+						varTR=$((varYY+varY))
+						arrayTXTOT[$cntrlL]=`expr $varTT`
+						arrayRXTOT[$cntrlL]=`expr $varTR`
+					fi
+					printf "$fmt" "${arrayName[$cntrlL]}" "${arrayTXFB[$cntrlL]}" "${arrayRXFB[$cntrlL]}" "${arrayTRATEB[$cntrlL]}" "${arrayRRATEB[$cntrlL]}" "${arrayTXTOT[$cntrlL]}" "${arrayRXTOT[$cntrlL]}"
 					cntrlL=$[$cntrlL+1]
 				done
 				sleep 5
