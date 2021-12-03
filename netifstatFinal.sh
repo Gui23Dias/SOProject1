@@ -132,7 +132,7 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			printf "$fmt" NETIF TX RX TRATE RRATE
 			while [ $cntrlC -lt $NINTERFACES ]; do
 				if  [[ ${arrayName[$cntrlC]} =~ $c ]]; then
-					printf "$fmt" "${arrayName[$cntrlC]}" "${arrayTXB[$cntrlC]}" "${arrayRXB[$cntrlC]}" "${arrayTRATEB[$cntrlC]}" "${arrayRRATEB[$cntrlC]}"
+					printf "$fmt" "${arrayName[$cntrlC]}" "${arrayTXFB[$cntrlC]}" "${arrayRXFB[$cntrlC]}" "${arrayTRATEB[$cntrlC]}" "${arrayRRATEB[$cntrlC]}"
 					numRegex=$[$numRegex+1]
 				fi
 				cntrlC=$[$cntrlC+1]
@@ -295,6 +295,7 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			;;
 		p)
 			NINTERFACES=($OPTARG)
+			cntrl=0
 			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 
 			if [[ $NINTERFACES -gt ${#arrayName[@]} ]];then
@@ -304,7 +305,7 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			printf "$fmt" NETIF TX RX TRATE RRATE
 
 			while [ $cntrl -lt $NINTERFACES ]; do
-				printf "$fmt" "${arrayName[$cntrl]}" "${arrayTXB[$cntrl]}" "${arrayRXB[$cntrl]}" "${arrayTRATEB[$cntrl]}" "${arrayRRATEB[$cntrl]}"
+				printf "$fmt" "${arrayName[$cntrl]}" "${arrayTXFB[$cntrl]}" "${arrayRXFB[$cntrl]}" "${arrayTRATEB[$cntrl]}" "${arrayRRATEB[$cntrl]}"
 				cntrl=$[$cntrl+1]
 			done
 			;;	
@@ -316,11 +317,11 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			fi
 			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
-			readarray -t arrayTXTemp < <(for a in "${arrayTXB[@]}"; do echo "$a"; done | sort -r) # sort -r se quiser ordem inversa
+			readarray -t arrayTXTemp < <(for a in "${arrayTXFB[@]}"; do echo "$a"; done | sort -r) # sort -r se quiser ordem inversa
 			for a in "${!arrayTXTemp[@]}"; do
-				for i in "${!arrayTXB[@]}"; do
-   					if [[ "${arrayTXTemp[$a]}" = "${arrayTXB[$i]}" ]];then
-						printf "$fmt" "${arrayName[$i]}" "${arrayTXB[$i]}" "${arrayRXB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
+				for i in "${!arrayTXFB[@]}"; do
+   					if [[ "${arrayTXTemp[$a]}" = "${arrayTXFB[$i]}" ]];then
+						printf "$fmt" "${arrayName[$i]}" "${arrayTXFB[$i]}" "${arrayRXFB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
 					fi
 				done
 			done
@@ -335,11 +336,11 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			fi
 			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
-			readarray -t arrayRXTemp < <(for a in "${arrayRXB[@]}"; do echo "$a"; done | sort -r)
+			readarray -t arrayRXTemp < <(for a in "${arrayRXFB[@]}"; do echo "$a"; done | sort -r)
 			for a in "${!arrayRXTemp[@]}"; do
-				for i in "${!arrayRXB[@]}"; do
-   					if [[ "${arrayRXTemp[$a]}" = "${arrayRXB[$i]}" ]];then
-						printf "$fmt" "${arrayName[$i]}" "${arrayTXB[$i]}" "${arrayRXB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
+				for i in "${!arrayRXFB[@]}"; do
+   					if [[ "${arrayRXTemp[$a]}" = "${arrayRXFB[$i]}" ]];then
+						printf "$fmt" "${arrayName[$i]}" "${arrayTXFB[$i]}" "${arrayRXFB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
 					fi
 				done
 			done
@@ -357,7 +358,7 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			for a in "${!arrayTRATETemp[@]}"; do
 				for i in "${!arrayTRATEB[@]}"; do
    					if [[ "${arrayTRATETemp[$a]}" = "${arrayTRATEB[$i]}" ]];then
-						printf "$fmt" "${arrayName[$i]}" "${arrayTXB[$i]}" "${arrayRXB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
+						printf "$fmt" "${arrayName[$i]}" "${arrayTXFB[$i]}" "${arrayRXFB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
 					fi
 				done
 			done
@@ -375,7 +376,7 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			for a in "${!arrayRRATETemp[@]}"; do
 				for i in "${!arrayRRATEB[@]}"; do
    					if [[ "${arrayRRATETemp[$a]}" = "${arrayRRATEB[$i]}" ]];then
-						printf "$fmt" "${arrayName[$i]}" "${arrayTXB[$i]}" "${arrayRXB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
+						printf "$fmt" "${arrayName[$i]}" "${arrayTXFB[$i]}" "${arrayRXFB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
 					fi
 				done
 			done
@@ -388,7 +389,7 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			
 			cntrlV="$((NINTERFACES-um))"
 			while [ $cntrlV -ge $cntrl ]; do
-				printf "$fmt" "${arrayName[$cntrlV]}" "${arrayTXB[$cntrlV]}" "${arrayRXB[$cntrlV]}" "${arrayTRATEB[$cntrlV]}" "${arrayRRATEB[$cntrlV]}"
+				printf "$fmt" "${arrayName[$cntrlV]}" "${arrayTXFB[$cntrlV]}" "${arrayRXFB[$cntrlV]}" "${arrayTRATEB[$cntrlV]}" "${arrayRRATEB[$cntrlV]}"
 				cntrlV=$[$cntrlV-1]
 			done
 			;;
@@ -400,9 +401,9 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 				cntrlL=0
 
 				while [ $cntrlL -lt $NINTERFACES ]; do
-					arrayTXTOT[$cntrlL]=`expr ${arrayTXTOT[$cntrlL]} + ${arrayTXB[$cntrlL]}`
-					arrayRXTOT[$cntrlL]=`expr ${arrayRXTOT[$cntrlL]} + ${arrayRXB[$cntrlL]}`
-					printf "$fmt" "${arrayName[$cntrlL]}" "${arrayTXB[$cntrlL]}" "${arrayRXB[$cntrlL]}" "${arrayTRATEB[$cntrlL]}" "${arrayRRATEB[$cntrlL]}" "${arrayTXTOT[$cntrl]}" "${arrayRXTOT[$cntrl]}"
+					arrayTXTOT[$cntrlL]=`expr ${arrayTXTOT[$cntrlL]} + ${arrayTXFB[$cntrlL]}`
+					arrayRXTOT[$cntrlL]=`expr ${arrayRXTOT[$cntrlL]} + ${arrayRXFB[$cntrlL]}`
+					printf "$fmt" "${arrayName[$cntrlL]}" "${arrayTXFB[$cntrlL]}" "${arrayRXFB[$cntrlL]}" "${arrayTRATEB[$cntrlL]}" "${arrayRRATEB[$cntrlL]}" "${arrayTXTOT[$cntrl]}" "${arrayRXTOT[$cntrl]}"
 					cntrlL=$[$cntrlL+1]
 				done
 				sleep 5
