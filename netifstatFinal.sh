@@ -55,10 +55,7 @@ elif  [[ ${@: -1} =~ $re ]] && [[ ${@: -2} =~ $p ]] ; then
 
 else
 	time=(${@: -1});
-    # echo "time: $time";  print do time
 fi
-
-
 
 
 NINTERFACES=$(netstat -i | awk '{print $NF}' | wc -w)-1
@@ -97,11 +94,11 @@ done
 
 cntrlArrayRate=0
 while [ $cntrlArrayRate -lt $NINTERFACES ]; do
-    tf=${arrayTXB2[$cntrlArrayRate]}
-    rf=${arrayRXB2[$cntrlArrayRate]}
-
     ti=${arrayTXB1[$cntrlArrayRate]}
+	tf=${arrayTXB2[$cntrlArrayRate]}
+ 
     ri=${arrayRXB1[$cntrlArrayRate]}
+	rf=${arrayRXB2[$cntrlArrayRate]}
 
     var1=`expr $tf - $ti`
     var2=`expr $rf - $ri`
@@ -146,7 +143,7 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
         b)
             b=${OPTARG}
 			cntrlB=0
-            fmt="%-12s%-12s%-12s%-12s%-12s\n"
+			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
 			while [ $cntrlB -lt $NINTERFACES ]; do
 				printf "$fmt" "${arrayName[$cntrlB]}" "${arrayTXFB[$cntrlB]}" "${arrayRXFB[$cntrlB]}" "${arrayTRATEB[$cntrlB]}" "${arrayRRATEB[$cntrlB]}"
@@ -158,6 +155,7 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			cntrlK=0
 			NRRX=2
 			NRTX=3
+			
 			while [ $cntrlArray1 -lt $NINTERFACES ]; do
 				arrayName=($(netstat -i | awk '{if(NR<='$NINTERFACES+2' && NR>=3) print $1}')) 
 
@@ -190,12 +188,13 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 
 			cntrlArrayRate=0
 			while [ $cntrlArrayRate -lt $NINTERFACES ]; do
-			    tf=${arrayTXKB2[$cntrlArrayRate]}
+			    ti=${arrayTXKB1[$cntrlArrayRate]}
+				tf=${arrayTXKB2[$cntrlArrayRate]}
+				
+				ri=${arrayRXKB1[$cntrlArrayRate]}
 			    rf=${arrayRXKB2[$cntrlArrayRate]}
 
-			    ti=${arrayTXKB1[$cntrlArrayRate]}
-			    ri=${arrayRXKB1[$cntrlArrayRate]}
-
+			    
 			    var1=`expr $tf - $ti` #T em bytes
 			    var2=`expr $rf - $ri` #R em bytes
 				var1f=$(($var1/$kb))  #T em kb
@@ -214,10 +213,8 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 				cntrlArrayRate=$[$cntrlArrayRate+1]
 			done
 
-
 			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
-
 			while [ $cntrlK -lt $NINTERFACES ]; do
 				printf "$fmt" "${arrayName[$cntrlK]}" "${arrayTXFKB[$cntrlK]}" "${arrayRXFKB[$cntrlK]}" "${arrayTRATEKB[$cntrlK]}" "${arrayRRATEKB[$cntrlK]}"
 				cntrlK=$[$cntrlK+1]
@@ -229,6 +226,7 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			cntrlMB=0
 			NRRX=2
 			NRTX=3
+			
 			while [ $cntrlArray1 -lt $NINTERFACES ]; do
 				arrayName=($(netstat -i | awk '{if(NR<='$NINTERFACES+2' && NR>=3) print $1}')) 
 
@@ -261,11 +259,11 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 
 			cntrlArrayRate=0
 			while [ $cntrlArrayRate -lt $NINTERFACES ]; do
-			    tf=${arrayTXMB2[$cntrlArrayRate]}
-			    rf=${arrayRXMB2[$cntrlArrayRate]}
-
 			    ti=${arrayTXMB1[$cntrlArrayRate]}
-			    ri=${arrayRXMB1[$cntrlArrayRate]}
+				tf=${arrayTXMB2[$cntrlArrayRate]}
+			    
+				rf=${arrayRXMB2[$cntrlArrayRate]}
+ 				ri=${arrayRXMB1[$cntrlArrayRate]}
 
 			    var1=`expr $tf - $ti` #T em bytes
 			    var2=`expr $rf - $ri` #R em bytes
@@ -285,10 +283,8 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 				cntrlArrayRate=$[$cntrlArrayRate+1]
 			done
 
-
 			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
-
 			while [ $cntrlMB -lt $NINTERFACES ]; do
 				printf "$fmt" "${arrayName[$cntrlMB]}" "${arrayTXFMB[$cntrlMB]}" "${arrayRXFMB[$cntrlMB]}" "${arrayTRATEMB[$cntrlMB]}" "${arrayRRATEMB[$cntrlMB]}"
 				cntrlMB=$[$cntrlMB+1]
@@ -297,32 +293,37 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 		p)
 			NINTERFACES=($OPTARG)
 			cntrl=0
-			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 
 			if [[ $NINTERFACES -gt ${#arrayName[@]} ]];then
 				echo "error: Number of interfaces invalid" >&2; exit 1
 			fi
 			
+			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
-
 			while [ $cntrl -lt $NINTERFACES ]; do
 				printf "$fmt" "${arrayName[$cntrl]}" "${arrayTXFB[$cntrl]}" "${arrayRXFB[$cntrl]}" "${arrayTRATEB[$cntrl]}" "${arrayRRATEB[$cntrl]}"
 				cntrl=$[$cntrl+1]
 			done
 			;;	
 		t)
-
+	
 			if [[ $sorting = "s" ]];then
 				echo "ERROR : More than 2 sorting options were selected"
 				exit 1;
 			fi
+
+			declare -a arrayTempNames=()
+			readarray -t arrayTXTemp < <(for a in "${arrayTXFB[@]}"; do echo "$a"; done | sort -r) 
+
 			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
-			readarray -t arrayTXTemp < <(for a in "${arrayTXFB[@]}"; do echo "$a"; done | sort -r) # sort -r se quiser ordem inversa
 			for a in "${!arrayTXTemp[@]}"; do
 				for i in "${!arrayTXFB[@]}"; do
    					if [[ "${arrayTXTemp[$a]}" = "${arrayTXFB[$i]}" ]];then
-						printf "$fmt" "${arrayName[$i]}" "${arrayTXFB[$i]}" "${arrayRXFB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
+						if [[ ! " ${arrayTempNames[*]} " =~ " ${arrayName[$i]} " ]]; then
+							printf "$fmt" "${arrayName[$i]}" "${arrayTXFB[$i]}" "${arrayRXFB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
+							arrayTempNames+=${arrayName[$i]}
+						fi
 					fi
 				done
 			done
@@ -330,18 +331,23 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			sorting="s";	
 			;;	
 		r)
-			
 			if [[ $sorting = "s" ]];then
 				echo "ERROR : More than 2 sorting options were selected"
 				exit 1;
 			fi
+
+			declare -a arrayTempNames=()
+			readarray -t arrayRXTemp < <(for a in "${arrayRXFB[@]}"; do echo "$a"; done | sort -r)
+			
 			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
-			readarray -t arrayRXTemp < <(for a in "${arrayRXFB[@]}"; do echo "$a"; done | sort -r)
 			for a in "${!arrayRXTemp[@]}"; do
 				for i in "${!arrayRXFB[@]}"; do
    					if [[ "${arrayRXTemp[$a]}" = "${arrayRXFB[$i]}" ]];then
-						printf "$fmt" "${arrayName[$i]}" "${arrayTXFB[$i]}" "${arrayRXFB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
+						if [[ ! " ${arrayTempNames[*]} " =~ " ${arrayName[$i]} " ]]; then
+							printf "$fmt" "${arrayName[$i]}" "${arrayTXFB[$i]}" "${arrayRXFB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
+							arrayTempNames+=${arrayName[$i]}
+						fi
 					fi
 				done
 			done
@@ -353,13 +359,19 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 				echo "ERROR : More than 2 sorting options were selected"
 				exit 1;
 			fi
+
+			declare -a arrayTempNames=()
+			readarray -t arrayTRATETemp < <(for a in "${arrayTRATEB[@]}"; do echo "$a"; done | sort -r)
+			
 			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
-			readarray -t arrayTRATETemp < <(for a in "${arrayTRATEB[@]}"; do echo "$a"; done | sort -r)
 			for a in "${!arrayTRATETemp[@]}"; do
 				for i in "${!arrayTRATEB[@]}"; do
    					if [[ "${arrayTRATETemp[$a]}" = "${arrayTRATEB[$i]}" ]];then
-						printf "$fmt" "${arrayName[$i]}" "${arrayTXFB[$i]}" "${arrayRXFB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
+					   if [[ ! " ${arrayTempNames[*]} " =~ " ${arrayName[$i]} " ]]; then
+							printf "$fmt" "${arrayName[$i]}" "${arrayTXFB[$i]}" "${arrayRXFB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
+							arrayTempNames+=${arrayName[$i]}
+						fi
 					fi
 				done
 			done
@@ -371,13 +383,19 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 				echo "ERROR : More than 2 sorting options were selected"
 				exit 1;
 			fi
+
+			declare -a arrayTempNames=()
+			readarray -t arrayRRATETemp < <(for a in "${arrayRRATEB[@]}"; do echo "$a"; done | sort -r)
+			
 			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
-			readarray -t arrayRRATETemp < <(for a in "${arrayRRATEB[@]}"; do echo "$a"; done | sort -r)
 			for a in "${!arrayRRATETemp[@]}"; do
 				for i in "${!arrayRRATEB[@]}"; do
    					if [[ "${arrayRRATETemp[$a]}" = "${arrayRRATEB[$i]}" ]];then
-						printf "$fmt" "${arrayName[$i]}" "${arrayTXFB[$i]}" "${arrayRXFB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
+					    if [[ ! " ${arrayTempNames[*]} " =~ " ${arrayName[$i]} " ]]; then
+							printf "$fmt" "${arrayName[$i]}" "${arrayTXFB[$i]}" "${arrayRXFB[$i]}" "${arrayTRATEB[$i]}" "${arrayRRATEB[$i]}"
+							arrayTempNames+=${arrayName[$i]}
+						fi
 					fi
 				done
 			done
@@ -395,7 +413,6 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			done
 			;;
 		l)
-			
 			fmt="%-12s%-12s%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE TXTOT RXTOT
 
