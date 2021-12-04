@@ -126,6 +126,9 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
     case "${o}" in
         c)	
             c=${OPTARG}
+			if [[ $c == $time ]]; then
+				echo "error: No regex pattern was declared." >&2; exit 1
+			fi
 			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
 			while [ $cntrlC -lt $NINTERFACES ]; do
