@@ -313,7 +313,7 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			fi
 
 			declare -a arrayTempNames=()
-			readarray -t arrayTXTemp < <(for a in "${arrayTXFB[@]}"; do echo "$a"; done | sort -r) 
+			arrayTXTemp=($(tr ' ' '\n' <<<"${arrayTXFB[@]}" | sort -nr))
 
 			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
@@ -337,7 +337,7 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			fi
 
 			declare -a arrayTempNames=()
-			readarray -t arrayRXTemp < <(for a in "${arrayRXFB[@]}"; do echo "$a"; done | sort -r)
+			arrayRXTemp=($(tr ' ' '\n' <<<"${arrayRXFB[@]}" | sort -nr))
 			
 			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
@@ -361,7 +361,8 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			fi
 
 			declare -a arrayTempNames=()
-			readarray -t arrayTRATETemp < <(for a in "${arrayTRATEB[@]}"; do echo "$a"; done | sort -r)
+			arrayTRATETemp=($(tr ' ' '\n' <<<"${arrayTRATEB[@]}" | sort -nr))
+			echo "${arrayTRATETemp[*]}"
 			
 			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
@@ -385,7 +386,7 @@ while getopts ":c:b:k:m:p:t:r:T:R:v:l:" o; do
 			fi
 
 			declare -a arrayTempNames=()
-			readarray -t arrayRRATETemp < <(for a in "${arrayRRATEB[@]}"; do echo "$a"; done | sort -r)
+			arrayRRATETemp=($(tr ' ' '\n' <<<"${arrayRRATEB[@]}" | sort -nr))
 			
 			fmt="%-12s%-12s%-12s%-12s%-12s\n"
 			printf "$fmt" NETIF TX RX TRATE RRATE
