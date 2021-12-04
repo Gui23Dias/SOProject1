@@ -8,11 +8,11 @@ getRules(){
 	-b    : visualize in bytes        
 	-k    : visualize in kylobytes    
 	-m    : visualize in megabytes    
-	-p    : number of interfaces      
-	-t    : sort on TX                
-	-r	  : sort on RX                
-	-T	  : sort on TRATE             
-	-R	  : sort on RRATE             
+	-p    : select number of interfaces      
+	-t    : sort by TX                
+	-r	  : sort by RX                
+	-T	  : sort by TRATE             
+	-R	  : sort by RRATE             
 	-v	  : reverse order             
 	-l	  : work in loop              
 		"	
