@@ -1,5 +1,4 @@
 #!/bin/bash
-sorting="";
 
 getRules(){
 
